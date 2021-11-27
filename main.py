@@ -34,10 +34,8 @@ class Handle_Data():
 
     def get_max_tickeid(self):
         try:
-            with open("count.txt", "r") as f:
-                data = f.readline()
-                logging.info(f"data from count file: {data}")
-            self.max_ticketid = int(data)
+            max_ticket_data = self.table.find_one(sort=[("_id", -1)])
+            self.max_ticketid = int(max_ticket_data['_id'])+1
             logging.info(f"Max ticketid: {self.max_ticketid}")
         except Exception as error:
             logging.exception(f"[get_max_tickeid]: {error}")
@@ -70,8 +68,6 @@ class Handle_Data():
             if final_data:
                 self.table.insert_many(final_data)
                 logging.info("Data inserted!!")
-                with open("count.txt", "w") as f:
-                    f.write(str(self.max_ticketid + BATCH_COUNT))
                 logging.info("Count updated!!")
             else:
                 logging.info("No eligible records!!")
